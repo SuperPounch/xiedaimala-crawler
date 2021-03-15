@@ -5,10 +5,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import java.io.IOException;
-/**
- * @author lx
- * @create_TIME 2021-03-15-15:09
- */
+
 public class Main {
     public static void main(String[] args) throws IOException {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
