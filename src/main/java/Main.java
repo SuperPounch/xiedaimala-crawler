@@ -5,13 +5,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.jcp.xml.dsig.internal.dom.DOMCanonicalizationMethod;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import sun.plugin2.applet.viewer.util.AppletTagParser;
-
-import javax.print.Doc;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -87,6 +83,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     private static boolean isInterestingLink(String link) {
