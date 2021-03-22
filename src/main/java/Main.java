@@ -61,7 +61,7 @@ public class Main {
         }
     }
 
-    private static Document httpGetAndParseHtml(String link) {
+    private static Document httpGetAndParseHtml(String link) throws IOException {
         //要处理的新浪站内链接，感兴趣
         CloseableHttpClient httpclient = HttpClients.createDefault();
 
@@ -78,12 +78,7 @@ public class Main {
             HttpEntity entity1 = response1.getEntity();
             String html = EntityUtils.toString(entity1);
             return Jsoup.parse(html);
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
     private static boolean isInterestingLink(String link) {
