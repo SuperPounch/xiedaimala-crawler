@@ -36,16 +36,8 @@ public class Main {
 
                 Document doc = httpGetAndParseHtml(link);
                 doc.select("a").stream().map(aTag -> aTag.attr("href")).forEach(linkpool::add);
-                /*for (Element aTag : links) {
-                    linkpool.add(aTag.attr("href"));
-                }
-*/
-                //新闻的详情页面就保持，否则不做
                 storeIntoDataBaseIfItIsNewsPage(doc);
-
                 processedlinks.add(link);
-
-
             }
         }
     }
