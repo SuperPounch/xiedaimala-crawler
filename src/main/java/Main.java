@@ -91,17 +91,6 @@ public class Main {
         return false;
     }
 
-
-    private static void storeIntoDataBaseIfItIsNewsPage(Document doc) {
-        ArrayList<Element> articleTags = doc.select("article");
-        if (!articleTags.isEmpty()) {
-            for (Element articleTag : articleTags) {
-                String title = articleTags.get(0).child(0).text();
-                System.out.println(title);
-            }
-        }
-    }
-
     private static void insertLinkIntoDatabase(Connection connection, String link, String sql) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, link);
