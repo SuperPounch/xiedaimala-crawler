@@ -1,3 +1,4 @@
+import jdk.nashorn.internal.ir.JumpToInlinedFinally;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -7,24 +8,44 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
 import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    static List<String> loadUrlsFromDataBase(Connection connection, String sql) throws SQLException {
+        List<String> results = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                results.add(resultSet.getString(1));
+            }
+        }
+        return results;
+    }
+
+    public static void main(String[] args) throws IOException, SQLException {
+
+        Connection connection = DriverManager.getConnection("jdbc:h2:file:D:\\xiedaimala-crawler/news", "root", "root");
+
         //待处理的链接池
-        List<String> linkpool = new ArrayList<>();
+        //从数据库加载即将处理的链接的代码
+        List<String> linkpool = loadUrlsFromDataBase(connection, "Select link from LINKS_TO_BE_PROCESSED");
+
         //已经处理的链接池
-        Set<String> processedlinks = new HashSet<>();
+        //从数据库j加载已经处理的链接的代码
+        Set<String> processedlinks = new HashSet<>(loadUrlsFromDataBase(connection, "Select link from LINKS_ALREADY_PROCESSED"));
         linkpool.add("https://sina.cn");
 
         while (true) {
             if (linkpool.isEmpty()) {
                 break;
             }
+
             //ArrayList 从尾部删除更效率
             String link = linkpool.remove(linkpool.size() - 1);
 
@@ -40,7 +61,9 @@ public class Main {
                 processedlinks.add(link);
             }
         }
+
     }
+
 
     private static void storeIntoDataBaseIfItIsNewsPage(Document doc) {
         ArrayList<Element> articleTags = doc.select("article");
