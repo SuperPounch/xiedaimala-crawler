@@ -1,6 +1,0 @@
-2021-03-24 17:37:39 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "LINKS_TO_BE_PROCESSED" not found; SQL statement:
-Select link from LINKS_TO_BE_PROCESSED [42102-200]
-2021-03-24 17:38:33 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "LINKS_TO_BE_PROCESSED" not found; SQL statement:
-Select link from LINKS_TO_BE_PROCESSED [42102-200]
