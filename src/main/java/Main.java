@@ -8,6 +8,7 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class Main {
             //从待处理池子中取一个来处理，
             //处理完后从池子（包括数据库）中删除
             String link = linkpool.remove(linkpool.size() - 1);
-            try(PreparedStatement statement = connection.prepareStatement("Delete from LINKS_TO_BE_PROCESSED where link = ?")){
+            try (PreparedStatement statement = connection.prepareStatement("Delete from LINKS_TO_BE_PROCESSED where link = ?")) {
                 statement.setString(1, link);
                 statement.executeUpdate();
             }
@@ -151,8 +152,5 @@ public class Main {
     private static boolean isNotLoginPage(String link) {
         return !link.contains("passport.sina.cn");
     }
-
-
-
 
 }
