@@ -8,7 +8,6 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -39,6 +38,7 @@ public class Main {
         //待处理的链接池
         //从数据库加载即将处理的链接的代码
         List<String> linkpool = loadUrlsFromDataBase(connection, "Select link from LINKS_TO_BE_PROCESSED");
+
 
         while (true) {
             if (linkpool.isEmpty()) {
@@ -88,6 +88,50 @@ public class Main {
             if (resultSet != null) {
                 resultSet.close();
             }
+            //ArrayList 从尾部删除更效率
+            String link = linkpool.remove(linkpool.size() - 1);
+
+            if (processedlinks.contains(link)) {
+                continue;
+            }
+            // if (link.contains("sina.cn") && !link.contains("passport.sina.cn") && (link.contains("news.sina.cn") || "https://sina.cn".equals(link))) {
+            if (isInterestingLink(link)) {
+
+                Document doc = httpGetAndParseHtml(link);
+                doc.select("a").stream().map(aTag -> aTag.attr("href")).forEach(linkpool::add);
+                storeIntoDataBaseIfItIsNewsPage(doc);
+                processedlinks.add(link);
+            }
+        }
+    }
+
+    private static void storeIntoDataBaseIfItIsNewsPage(Document doc) {
+        ArrayList<Element> articleTags = doc.select("article");
+        if (!articleTags.isEmpty()) {
+            for (Element articleTag : articleTags) {
+                String title = articleTags.get(0).child(0).text();
+                System.out.println(title);
+            }
+        }
+    }
+
+    private static Document httpGetAndParseHtml(String link) throws IOException {
+        //要处理的新浪站内链接，感兴趣
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        System.out.println(link);
+        if (link.startsWith("//")) {
+            link = "https:" + link;
+        }
+
+        HttpGet httpGet = new HttpGet(link);
+        httpGet.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36");
+
+        try (CloseableHttpResponse response1 = httpclient.execute(httpGet)) {
+            System.out.println(response1.getStatusLine());
+            HttpEntity entity1 = response1.getEntity();
+            String html = EntityUtils.toString(entity1);
+            return Jsoup.parse(html);
         }
         return false;
     }
@@ -125,6 +169,22 @@ public class Main {
             String html = EntityUtils.toString(entity1);
             return Jsoup.parse(html);
         }
+    }
+
+    private static boolean isInterestingLink(String link) {
+        return (isNewsPage(link) || isIndexPage(link)) && isNotLoginPage(link);
+    }
+
+    private static boolean isIndexPage(String link) {
+        return "https://sina.cn".equals(link);
+    }
+
+    private static boolean isNewsPage(String link) {
+        return link.contains("news.sina.cn");
+    }
+
+    private static boolean isNotLoginPage(String link) {
+        return !link.contains("passport.sina.cn");
     }
 
     private static boolean isInterestingLink(String link) {
