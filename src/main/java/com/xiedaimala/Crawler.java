@@ -1,3 +1,5 @@
+package com.xiedaimala;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;

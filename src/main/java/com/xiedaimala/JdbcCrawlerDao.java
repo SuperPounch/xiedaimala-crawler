@@ -1,3 +1,6 @@
+package com.xiedaimala;
+
+import com.xiedaimala.CrawlerDao;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.sql.*;

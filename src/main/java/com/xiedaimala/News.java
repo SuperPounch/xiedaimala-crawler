@@ -1,3 +1,4 @@
+package com.xiedaimala;
 
 public class News {
     private Integer id;
