@@ -9,6 +9,7 @@ public class JdbcCrawlerDao implements CrawlerDao {
     private static final String USER_NAME = "root";
     private static final String PASSWORD = "root";
     private final Connection connection;
+
     @SuppressFBWarnings("DMI_CONSTANT_DB_PASSWORD")
     public JdbcCrawlerDao() {
         try {
@@ -17,8 +18,8 @@ public class JdbcCrawlerDao implements CrawlerDao {
             throw new RuntimeException(e);
         }
     }
-   // @SuppressFBWarnings("DMI_CONSTANT_DB_PASSWORD")
-    public String getNextLink(String sql) throws SQLException {
+
+    private String getNextLink(String sql) throws SQLException {
         ResultSet resultSet = null;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             resultSet = statement.executeQuery();
@@ -72,6 +73,16 @@ public class JdbcCrawlerDao implements CrawlerDao {
             }
         }
         return false;
+    }
+
+    @Override
+    public void insertProcessedLink(String link) {
+
+    }
+
+    @Override
+    public void insertLinkToBeProcessed(String href) {
+
     }
 }
 

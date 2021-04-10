@@ -6,6 +6,12 @@ public class News {
     private String content;
     private String title;
 //    private Date createdAt;
+
+    public News(String url, String content, String title) {
+        this.url = url;
+        this.content = content;
+        this.title = title;
+    }
 //    private Date modifiedAt;
 
     public String getTitle() {
