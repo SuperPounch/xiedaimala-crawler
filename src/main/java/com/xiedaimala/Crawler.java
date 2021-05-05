@@ -1,4 +1,5 @@
 package com.xiedaimala;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -14,37 +15,36 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class Crawler {
+public class Crawler extends Thread {
+    private CrawlerDao dao;
 
-    CrawlerDao dao = new MyBatisCrawlerDao();
-
-    public Crawler() throws SQLException {
+    public Crawler(CrawlerDao dao) {
+        this.dao=dao;
     }
 
-    public void run() throws SQLException, IOException {
-        String link;
-        //从数据库取出一个链接,如果加载到，准备处理该链接
-        while ((link = dao.getNextLinkThenDelete()) != null) {
-            //询问数据库是否处理过当前链接
-            if (dao.isLinkProcessed(link)) {
-                continue;
+    @Override
+    public void run() {
+        try {
+            String link;
+            //从数据库取出一个链接,如果加载到，准备处理该链接
+            while ((link = dao.getNextLinkThenDelete()) != null) {
+                //询问数据库是否处理过当前链接
+                if (dao.isLinkProcessed(link)) {
+                    System.out.println("处理过了" + link);
+                    continue;
+                }
+                //我们只关心news.sina, 排除掉登录页面
+                if (isInterestingLink(link)) {
+                    System.out.println(link);
+                    Document doc = httpGetAndParseHtml(link);
+                    parseUrlsFromPageAndStoreIntoDatabase(doc);
+                    storeIntoDatabaseIfItIsNewsPage(doc, link);
+                    dao.insertProcessedLink(link);
+                }
             }
-
-            //我们只关心news.sina, 排除掉登录页面
-            if (isInterestingLink(link)) {
-                System.out.println(link);
-                Document doc = httpGetAndParseHtml(link);
-                parseUrlsFromPageAndStoreIntoDatabase(doc);
-                storeIntoDatabaseIfItIsNewsPage(doc, link);
-                dao.insertProcessedLink(link);
-                //dao.updateDatabase(link, "INSERT INTO LINKS_ALREADY_PROCESSED (link) values (?)");
-            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-    }
-
-    public static void main(String[] args) throws IOException, SQLException {
-        new Crawler().run();
-
     }
 
 

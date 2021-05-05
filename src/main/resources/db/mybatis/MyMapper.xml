@@ -22,17 +22,18 @@
     <select id="countLink" parameterType="String" resultType="int">
         select count(LINK)
         from LINKS_ALREADY_PROCESSED
+        where link = #{link}
     </select>
     <insert id="insertLink" parameterType="HashMap">
         insert into
         <choose>
-            <when test="tableName == 'Links_already_processed' ">
+            <when test="tableName == 'LINKS_ALREADY_PROCESSED' ">
                 LINKS_ALREADY_PROCESSED
             </when>
             <otherwise>
-                links_to_be_processed
+                LINKS_TO_BE_PROCESSED
             </otherwise>
         </choose>
-        (link)values #{link}
+        (link)values (#{link})
     </insert>
 </mapper>

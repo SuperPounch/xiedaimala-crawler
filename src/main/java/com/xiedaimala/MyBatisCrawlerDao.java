@@ -23,7 +23,7 @@ public class MyBatisCrawlerDao implements CrawlerDao {
     }
 
     @Override
-    public String getNextLinkThenDelete() throws SQLException {
+    public synchronized String getNextLinkThenDelete()throws SQLException {
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             String url = session.selectOne("com.xiedaimala.MyMapper.selectNextAvailableLink");
             if (url != null) {
@@ -34,16 +34,16 @@ public class MyBatisCrawlerDao implements CrawlerDao {
     }
 
     @Override
-    public void insertNewsIntoDatabase(String url, String title, String content) throws SQLException {
+    public void insertNewsIntoDatabase(String url, String title, String content) throws SQLException{
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             session.insert("com.xiedaimala.MyMapper.insertNews", new News(url, title, content));
         }
     }
 
     @Override
-    public boolean isLinkProcessed(String link) throws SQLException {
+    public boolean isLinkProcessed(String link) throws SQLException{
         try (SqlSession session = sqlSessionFactory.openSession()) {
-            int count = (Integer) session.selectOne("com.xiedaimala.MyMapper.countLink", link);
+            int count =(Integer) session.selectOne("com.xiedaimala.MyMapper.countLink", link);
             return count != 0;
         }
     }
@@ -51,7 +51,7 @@ public class MyBatisCrawlerDao implements CrawlerDao {
     @Override
     public void insertProcessedLink(String link) {
         Map<String, Object> param = new HashMap<>();
-        param.put("tableName", "links_already_processed");
+        param.put("tableName", "LINKS_ALREADY_PROCESSED");
         param.put("link", link);
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             session.insert("com.xiedaimala.MyMapper.insertLink", param);
@@ -61,7 +61,7 @@ public class MyBatisCrawlerDao implements CrawlerDao {
     @Override
     public void insertLinkToBeProcessed(String link) {
         Map<String, Object> param = new HashMap<>();
-        param.put("tableName", "links_to_be_processed");
+        param.put("tableName", "LINKS_TO_BE_PROCESSED");
         param.put("link", link);
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             session.insert("com.xiedaimala.MyMapper.insertLink", param);
